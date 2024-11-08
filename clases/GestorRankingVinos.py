@@ -1,5 +1,7 @@
-from clases.PantallaExcel import PantallaExcel
+from typing import List
+from PantallaExcel import PantallaExcel
 from fpdf import FPDF
+from IteradorVinos import IteradorVinos
 
 
 class GestorRankingVinos:
@@ -13,11 +15,16 @@ class GestorRankingVinos:
         self.infoVinos = []
         self.infoVinosOrdenados = None
         self.puntajeVinos = []
-        self.tipoReportes = ["Premium", "Normales", "Amigos"]
+        self.tipoReportes = None
         self.tipoReporteSeleccionado = None
-        self.tipoVisualizacion = ["PDF", "Excel"]
+        self.tipoVisualizacion = None
         self.puntajeVinos = []
         self.pantallaExcel = None
+        # puntero a la interfaz iterador - definirlo bien
+        self.iteradorVinos = None
+        
+    def crearIterador(self, elementos: List[object], filtros: List[object]):
+        self.iteradorVinos = IteradorVinos(elementos, filtros)
 
     def habilitarRanking(self):
         print("Habilitando ranking...")
@@ -27,6 +34,15 @@ class GestorRankingVinos:
         return self.pantalla.pedirSeleccionFechas()
 
     def obtenerInformacionVinoYReseñaEnPeriodo(self):
+        self.crearIterador(self.listaVinos, [self.fechaDesde, self.fechaHasta])
+        self.iteradorVinos.primero()
+        while not self.iteradorVinos.haTerminado():
+            if self.iteradorVinos.actual():
+                # obtener datos de actual
+                vino = self.iteradorVinos.actual()
+                pass
+            self.iteradorVinos.siguiente()
+        
         for vino in self.listaVinos:
             if vino.tenesResenaDeTipoEnPeriodo(self.fechaDesde, self.fechaHasta):
                 nombreVino = vino.getNombre()
@@ -34,6 +50,8 @@ class GestorRankingVinos:
                 infoBodega = vino.buscarInfoBodega()
                 if [nombreVino, precioVino, infoBodega] not in self.infoVinos:  # Check if the wine info is not already in the list
                     self.infoVinos.append([nombreVino, precioVino, infoBodega])
+        
+        
         return self.calcularPromedioResenasEnPeriodo()
 
     def setPantalla(self, pantalla):

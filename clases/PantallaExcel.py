@@ -1,5 +1,5 @@
 import pandas as pd
-import openpyxl
+import openpyxl  #Deben instalar esta biblioteca sino no funciona la generacion del archivo excel.
 import os
 from tkinter import ttk
 import tkinter as tk
